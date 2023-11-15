@@ -20,6 +20,7 @@ uniform float wind_dir = 0.3;
 uniform float med_len = 2.0;
 uniform float med_amp = 1.0;
 uniform float speed = 1.0;
+uniform float height_adj = 0.0;
 
 void vertex() {
 	float y_sum = 0.0;			// Accumulator for each vertex's y-displacement
@@ -59,7 +60,7 @@ void vertex() {
 		partial_y_sum += partial_y;  
 	}
 	// Set vertex position
-	VERTEX.y = y_sum;
+	VERTEX.y = y_sum + height_adj;
 	
 	// Set vertex normal using summed partial derivatives of H(x,y,z)
 	NORMAL = vec3(-partial_x_sum, -partial_y_sum, 1);
