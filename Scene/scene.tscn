@@ -15,10 +15,13 @@ shader_parameter/wind_dir = 0.3
 shader_parameter/med_len = 2.0
 shader_parameter/med_amp = 1.0
 shader_parameter/speed = 1.0
-shader_parameter/albedo = null
+shader_parameter/albedo = Color(0, 0.25098, 0.368627, 1)
 
 [node name="Scene" type="Node3D"]
 
 [node name="OceanMesh" type="MeshInstance3D" parent="."]
 mesh = SubResource("PlaneMesh_plirc")
 surface_material_override/0 = SubResource("ShaderMaterial_jj0a4")
+
+[node name="DirectionalLight3D" type="DirectionalLight3D" parent="."]
+transform = Transform3D(0.956809, -0.096666, 0.274177, 0, 0.943101, 0.332507, -0.290719, -0.318145, 0.902367, -0.321175, 15.2202, 35.1934)
