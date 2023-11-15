@@ -1,6 +1,6 @@
 [gd_scene load_steps=4 format=3 uid="uid://boafaywxvgyoi"]
 
-[ext_resource type="Shader" path="res://Shaders/water_1.gdshader" id="1_l1y1t"]
+[ext_resource type="Shader" path="res://Shaders/water_1.gdshader" id="1_7xjff"]
 
 [sub_resource type="PlaneMesh" id="PlaneMesh_plirc"]
 size = Vector2(32, 32)
@@ -9,7 +9,7 @@ subdivide_depth = 256
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_jj0a4"]
 render_priority = 0
-shader = ExtResource("1_l1y1t")
+shader = ExtResource("1_7xjff")
 
 [node name="Scene" type="Node3D"]
 
