@@ -1,5 +1,11 @@
-shader_type spatial;
-render_mode specular_toon;
+/**
+* water_1.gdshader
+* Copyright Kaiya Magnuson 2023
+* Contains the vertex shader and fragment shader programs for the sum of sines ocean shader.
+*/
+
+shader_type spatial;		// Indicate 3D model type
+render_mode specular_toon;	// Use diffuse lighting model
 
 /*
 Generates a pseudo-random number using two irrational numbers and a seed value.
