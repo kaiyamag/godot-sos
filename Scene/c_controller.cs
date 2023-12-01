@@ -1,3 +1,9 @@
+/**
+* c_controller.cs
+* Copyright Kaiya Magnuson 2023
+* This script modifies the uniform variables within the vertex shader at runtime.
+*/
+
 using Godot;
 using System;
 

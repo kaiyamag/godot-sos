@@ -14,14 +14,17 @@ float random( vec2 p )
     return fract( cos( dot(p,K1) ) * 12345.6789 );		// fract returns the menissa (after decimal point)
 }
 
+// Uniform variables for vertex shader
+uniform int num_waves = 4;			// The number of waves summed in the model
+uniform float wind_dir = 0.3;		// The wind direction in radians
+uniform float med_len = 2.0;		// The base wavelength for all generated waves
+uniform float med_amp = 1.0;		// The base amplitude for all generated waves
+uniform float speed = 1.0;			// The speed of wave travel
+uniform float height_adj = 0.0;		// The vertical offset of the entire wave mesh
 
-uniform int num_waves = 4;
-uniform float wind_dir = 0.3;
-uniform float med_len = 2.0;
-uniform float med_amp = 1.0;
-uniform float speed = 1.0;
-uniform float height_adj = 0.0;
-
+// -----------------------------------------------------------------------------
+// VERTEX SHADER
+// -----------------------------------------------------------------------------
 void vertex() {
 	float y_sum = 0.0;			// Accumulator for each vertex's y-displacement
 	float partial_x_sum = 0.0; 	// Accumulator for each vertex's normal vector x comoponent
@@ -35,13 +38,13 @@ void vertex() {
 		float l = med_len;
 		float a = med_amp;
 
+		// Get unit vector in direction of wind_angle
 		float rand = random(vec2(TIME / 100.0, TIME));
 		float wind_angle = (wind_dir - wind_var) + (1.5 * float(i)) * (wind_dir + (2.0 * wind_var));
-		// That 1.5 constant determines how nicely lined-up all the wind directions are
-		// Get unit vector in direction of wind_angle
+		// The 1.5 constant determines how nicely lined-up all the wind directions are
 		vec2 dir = vec2(cos(wind_angle), cos((PI/2.0) - wind_angle));
 		
-	    float w = 2.0 / l;          // Frequency
+	    float w = 2.0 / l;          	// Frequency
 	    float rho = speed * 2.0 / l;    // Phase constant
 		
 		// Solve for vertex position
@@ -59,6 +62,7 @@ void vertex() {
 		partial_x_sum += partial_x;
 		partial_y_sum += partial_y;  
 	}
+
 	// Set vertex position
 	VERTEX.y = y_sum + height_adj;
 	
@@ -66,14 +70,18 @@ void vertex() {
 	NORMAL = vec3(-partial_x_sum, -partial_y_sum, 1);
 }
 
-uniform vec3 albedo : source_color;
+// Uniform variables for fragment shader
+uniform vec3 albedo : source_color;		// The default color for the ocean mesh
 
+// -----------------------------------------------------------------------------
+// FRAGMENT SHADER
+// -----------------------------------------------------------------------------
 void fragment() {
-	// From Godot tutorial
-	float fresnel = sqrt(1.0 - dot(NORMAL, VIEW));
-	METALLIC = 0.0;
-	ROUGHNESS = 0.01 * (1.0 - fresnel);
-	RIM = 0.2;
-	ALBEDO = albedo + (0.1 * fresnel);
+	// Basic diffuse lighting fragment shader from this Godot tutorial: https://docs.godotengine.org/en/3.5/tutorials/shaders/your_first_shader/your_second_3d_shader.html
+	float fresnel = sqrt(1.0 - dot(NORMAL, VIEW));		// Fresnel reflection intensity
+	METALLIC = 0.0;										// Water material's metallic intensity
+	ROUGHNESS = 0.01 * (1.0 - fresnel);					// Water material's roughness
+	RIM = 0.2;											// Water material's rim lighting intensity
+	ALBEDO = albedo + (0.1 * fresnel);					// Final color of water material with fresnel
 }
 
