@@ -79,6 +79,20 @@ void vertex() {
 // Uniform variables for fragment shader
 uniform vec3 albedo : source_color;		// The default color for the ocean mesh
 
+// Returns the amplitude associated with the given frequency on the Phillips
+// oceanographic spectrum with a given wind speed.
+float spectrum(float freq, float wind_speed) {
+	// Universal constants
+	float e = 2.7183;
+	float gravity = 9.8;
+	
+	// Phillips spectrum
+	float L = pow(wind_speed, 2) / gravity;
+	float amp = pow(e, -1.0 / pow(freq * L, 2));
+	amp = amp / pow(freq, 4);
+	return amp;
+}
+
 // -----------------------------------------------------------------------------
 // FRAGMENT SHADER
 // -----------------------------------------------------------------------------
