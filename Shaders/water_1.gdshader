@@ -51,7 +51,8 @@ void vertex() {
 		vec2 dir = vec2(cos(wind_angle), cos((PI/2.0) - wind_angle));
 		
 	    float w = 2.0 / l;          	// Frequency
-	    float rho = speed * 2.0 / l;    // Phase constant
+		float rho = speed * 2.0 / l;    // Phase constant
+	    // float rho = ( 1.0 / float(i) ) * speed * 2.0 / l;    // Phase constant with wavenumber-based speed adjustment
 		
 		// Solve for vertex position
 		vec2 xz_pos = vec2(VERTEX.x, VERTEX.z);
