@@ -13,7 +13,7 @@ public partial class c_controller : MeshInstance3D
 	float r1, r2;					// The random factors to interpolate between
 	float random;					// The random wave height factor
 	int rand_min = 20;				// The minimum rand factor, as a percentage
-	int rand_max = 100;				// The maximum rand factor, as a percentage
+	int rand_max = 200;				// The maximum rand factor, as a percentage
 	private int lerp_time;			// Current number of frames in this lerp
 	private float lerp_max = 100;	// Duration of each lerp, in number of frames
 	private Random rand;			// Peudorandom number generator
