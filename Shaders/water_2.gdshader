@@ -44,6 +44,8 @@ uniform float amp_scalar = 1.0;		// The base amplitude for all generated waves
 uniform float wave_speed = 1.0;			// The speed of wave travel
 uniform float wind_speed = 1.0;		// The wind speed (in mph?) used in the Phillips spectrum. Controls wave choppiness
 uniform float height_adj = 0.0;		// The vertical offset of the entire wave mesh
+uniform float rand_factor = 1.0;			// A random multiplier controlled by the main program loop
+
 varying vec3 debug;
 
 // -----------------------------------------------------------------------------
@@ -84,7 +86,7 @@ void vertex() {
 		//float w_scaled = float(freq) / float(num_waves);
 		//y_sum += 1.0 - (a_scaled * sin(dot_xz * w * w_scaled + TIME * rho));
 		
-		float phillips_amp = spectrum(freq, wind_speed) * amp_scalar;	// Scaled for artistic effect
+		float phillips_amp = spectrum(freq, wind_speed) * amp_scalar * rand_factor;	// Scaled for artistic effect
 		y_sum += (phillips_amp * sin(dot_xz * freq + TIME * rho));
 		debug = vec3(phillips_amp, 0.0, 0.0);
 		

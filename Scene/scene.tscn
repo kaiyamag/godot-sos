@@ -12,12 +12,12 @@ subdivide_depth = 256
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_jj0a4"]
 render_priority = 0
 shader = ExtResource("1_7xjff")
-shader_parameter/num_waves = 5
+shader_parameter/num_waves = 25
 shader_parameter/wind_dir = 0.3
 shader_parameter/med_len = 3.0
 shader_parameter/med_amp = 1.5
 shader_parameter/speed = 1.0
-shader_parameter/height_adj = -2.79
+shader_parameter/height_adj = -25.0
 shader_parameter/albedo = Color(0, 0.25098, 0.368627, 1)
 
 [sub_resource type="PlaneMesh" id="PlaneMesh_n4lhe"]
@@ -35,14 +35,15 @@ shader_parameter/amp_scalar = 1.0
 shader_parameter/wave_speed = 1.0
 shader_parameter/wind_speed = 4.0
 shader_parameter/height_adj = 0.0
+shader_parameter/rand_factor = 1.0
 shader_parameter/albedo = Color(0.109804, 0.231373, 0.12549, 1)
 
 [node name="Scene" type="Node3D"]
 
 [node name="OceanMesh" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.000747681, 3.8147e-06, -0.122864)
 mesh = SubResource("PlaneMesh_plirc")
 surface_material_override/0 = SubResource("ShaderMaterial_jj0a4")
-script = ExtResource("2_0g7lv")
 
 [node name="DirectionalLight3D" type="DirectionalLight3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, 0.943101, 0.332507, 0, -0.332507, 0.943101, -0.321175, 15.2202, 35.1934)
@@ -51,7 +52,8 @@ transform = Transform3D(1, 0, 0, 0, 0.943101, 0.332507, 0, -0.332507, 0.943101, 
 transform = Transform3D(0.00157261, 0.201984, -0.979388, -0.000324327, 0.979389, 0.201984, 0.999999, 5.82076e-11, 0.0016057, -24.0009, 8.20871, 0)
 
 [node name="MeshInstance3D" type="MeshInstance3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 56)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 35.1978)
 mesh = SubResource("PlaneMesh_n4lhe")
 skeleton = NodePath("../OceanMesh")
 surface_material_override/0 = SubResource("ShaderMaterial_p0hwe")
+script = ExtResource("2_0g7lv")
