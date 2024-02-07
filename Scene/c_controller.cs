@@ -9,23 +9,26 @@ using System;
 
 public partial class c_controller : MeshInstance3D
 {
-	Material mat;
-	float r1, r2;
-	float random;
-	private int lerp_time;
-	private float lerp_max = 100;
-	private Random rand;
+	Material mat;					// A reference to this object's shader material
+	float r1, r2;					// The random factors to interpolate between
+	float random;					// The random wave height factor
+	int rand_min = 20;				// The minimum rand factor, as a percentage
+	int rand_max = 100;				// The maximum rand factor, as a percentage
+	private int lerp_time;			// Current number of frames in this lerp
+	private float lerp_max = 100;	// Duration of each lerp, in number of frames
+	private Random rand;			// Peudorandom number generator
 	
 	
 	// Called when the node enters the scene tree for the first time.
+	// Initializes the pseudorandom number generator and references to shader parameters.
 	public override void _Ready()
 	{
 		lerp_time = 0;
 
 		// Generate pseudorandom numbers
 		rand = new Random();
-		r1 = (float) (rand.Next(0, 100) / 100.0);
-		r2 = (float) (rand.Next(0, 100) / 100.0);
+		r1 = (float) (rand.Next(rand_min, rand_max) / 100.0);
+		r2 = (float) (rand.Next(rand_min, rand_max) / 100.0);
 		random = r1;
 		GD.Print(random);
 
@@ -36,13 +39,14 @@ public partial class c_controller : MeshInstance3D
 	}
 
 	// Called every frame. 'delta' is the elapsed time since the previous frame.
+	// Updates the linear interpolation between two random wave heights
 	public override void _Process(double delta)
 	{
 		// Lerp to a new random target if lerp_max is reached
 		if (lerp_time >= lerp_max) {
 			// Reset r1 and r2
 			r1 = r2;
-			r2 = (float) (rand.Next(0, 100) / 100.0);
+			r2 = (float) (rand.Next(rand_min, rand_max) / 100.0);
 			GD.Print("Reset, next r = ", r2);
 			lerp_time = 0;
 		}
