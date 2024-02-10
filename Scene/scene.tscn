@@ -31,13 +31,12 @@ shader = ExtResource("3_0h4ge")
 shader_parameter/freq_limit = 5.0
 shader_parameter/step_size = 0.1
 shader_parameter/wind_dir = 1.0
-shader_parameter/amp_scalar = 1.0
-shader_parameter/wave_speed = 1.0
 shader_parameter/wind_speed = 2.5
+shader_parameter/wave_speed = 1.0
+shader_parameter/amp_scalar = 1.0
 shader_parameter/height_adj = 0.0
 shader_parameter/rand_factor = 1.0
-shader_parameter/num_waves_limit = 40
-shader_parameter/albedo = Color(0.109804, 0.231373, 0.12549, 1)
+shader_parameter/albedo = Color(0.0509804, 0.172549, 0.215686, 1)
 
 [node name="Scene" type="Node3D"]
 
@@ -47,7 +46,7 @@ mesh = SubResource("PlaneMesh_plirc")
 surface_material_override/0 = SubResource("ShaderMaterial_jj0a4")
 
 [node name="DirectionalLight3D" type="DirectionalLight3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 0.943101, 0.332507, 0, -0.332507, 0.943101, -0.321175, 15.2202, 35.1934)
+transform = Transform3D(1, 0, 0, 0, 0.943101, 0.332507, 0, -0.332507, 0.943101, -0.321175, 15.2202, 42.5938)
 
 [node name="Camera3D" type="Camera3D" parent="."]
 transform = Transform3D(0.00157261, 0.201984, -0.979388, -0.000324327, 0.979389, 0.201984, 0.999999, 2.32831e-10, 0.00160571, -97.1907, 8.20871, 0)
