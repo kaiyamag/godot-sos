@@ -34,6 +34,21 @@ float spectrum(float freq, float wind_speed) {
 	return amp;
 }
 
+// Takes the frequency of a wave and prevailing wind direction in radians.
+// Returns the result of the directional spread function
+float directional_spread(float freq, float wind_dir) {
+	return 1.0;		// STUB
+}
+
+// Returns the frequency of a wave given its wavenumber, according to a deep water
+// dispersion relationship
+float dispersion(float k) {
+	float damping_factor = 3.0;		// ADDED: lower damping factor produces lower-energy waves
+	return sqrt(9.8 * k) / 3.0;
+}
+
+// ---------------------------------------------------------------------------
+
 // Uniform variables for vertex shader
 //uniform int num_waves = 4;			// The number of waves summed in the model
 uniform float freq_limit = 1;
@@ -61,8 +76,14 @@ void vertex() {
 	//vec2 dir[4]  = {vec2(1.0,1.0), vec2(0.5,1.0), vec2(0.0,1.0), vec2(1.0,0.5)};
 	
 	float rand = random(vec2(TIME / 100.0, TIME));
+	
+	int num_waves = 0;		// Counts number of waves used
 
-	for (float freq = 0.1; freq <= freq_limit; freq += step_size) {
+	//for (float freq = 0.1; freq <= freq_limit; freq += step_size) {
+	// Wait dispersion is for wavenumber...
+	for (float k = 0.5; dispersion(float(k)) <= freq_limit; k += float(step_size)) {
+		float freq = dispersion(float(k));
+		num_waves++;
 		//float l = med_len;
 		//float a = med_amp;
 		float l = wave_speed / freq;		// Relationship between wavelength, speed, and frequency
@@ -74,7 +95,7 @@ void vertex() {
 		// The 1.5 constant determines how nicely lined-up all the wind directions are
 		vec2 dir = vec2(cos(wind_angle), cos((PI/2.0) - wind_angle));
 		
-	    float w = 2.0 / l;          	// Frequency
+	    //float w = 2.0 / l;          	// Frequency
 	    //float rho = speed * 2.0 / l;    // Phase constant
 		// That formula cancelled out speed, trying a new rho:
 		float rho = l / 2.0 * PI; 		// Not scientifically accurate, but allows for better artistic control of wave speed
@@ -87,6 +108,8 @@ void vertex() {
 		//y_sum += 1.0 - (a_scaled * sin(dot_xz * w * w_scaled + TIME * rho));
 		
 		float phillips_amp = spectrum(freq, wind_speed) * amp_scalar * rand_factor;	// Scaled for artistic effect
+		float dir_spread = directional_spread(freq, wind_dir);
+		phillips_amp *= dir_spread;
 		y_sum += (phillips_amp * sin(dot_xz * freq + TIME * rho));
 		debug = vec3(phillips_amp, 0.0, 0.0);
 		
