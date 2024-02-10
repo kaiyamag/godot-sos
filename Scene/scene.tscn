@@ -28,14 +28,15 @@ subdivide_depth = 256
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_p0hwe"]
 render_priority = 0
 shader = ExtResource("3_0h4ge")
-shader_parameter/freq_limit = 4.0
+shader_parameter/freq_limit = 5.0
 shader_parameter/step_size = 0.1
-shader_parameter/wind_dir = 0.3
+shader_parameter/wind_dir = 1.0
 shader_parameter/amp_scalar = 1.0
 shader_parameter/wave_speed = 1.0
 shader_parameter/wind_speed = 2.5
 shader_parameter/height_adj = 0.0
 shader_parameter/rand_factor = 1.0
+shader_parameter/num_waves_limit = 40
 shader_parameter/albedo = Color(0.109804, 0.231373, 0.12549, 1)
 
 [node name="Scene" type="Node3D"]

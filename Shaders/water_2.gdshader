@@ -37,14 +37,14 @@ float spectrum(float freq, float wind_speed) {
 // Takes the frequency of a wave and prevailing wind direction in radians.
 // Returns the result of the directional spread function
 float directional_spread(float freq, float wind_dir) {
-	return 1.0;		// STUB
+	return 1.0 / 2.0 * PI;		// Default directional spread (Horvath)
 }
 
 // Returns the frequency of a wave given its wavenumber, according to a deep water
 // dispersion relationship
 float dispersion(float k) {
 	float damping_factor = 3.0;		// ADDED: lower damping factor produces lower-energy waves
-	return sqrt(9.8 * k) / 3.0;
+	return sqrt(9.8 * k) / damping_factor;
 }
 
 // ---------------------------------------------------------------------------
@@ -60,6 +60,7 @@ uniform float wave_speed = 1.0;			// The speed of wave travel
 uniform float wind_speed = 1.0;		// The wind speed (in mph?) used in the Phillips spectrum. Controls wave choppiness
 uniform float height_adj = 0.0;		// The vertical offset of the entire wave mesh
 uniform float rand_factor = 1.0;			// A random multiplier controlled by the main program loop
+uniform int num_waves_limit = 10;
 
 varying vec3 debug;
 
@@ -79,10 +80,11 @@ void vertex() {
 	
 	int num_waves = 0;		// Counts number of waves used
 
-	//for (float freq = 0.1; freq <= freq_limit; freq += step_size) {
+	for (float freq = 0.1; freq <= freq_limit; freq += step_size) {
 	// Wait dispersion is for wavenumber...
-	for (float k = 0.5; dispersion(float(k)) <= freq_limit; k += float(step_size)) {
-		float freq = dispersion(float(k));
+	//for (float k = 0.5; dispersion(float(k)) <= freq_limit; k += float(step_size)) {
+	//for (int k = 1; k < num_waves_limit; k++) {
+		//float freq = dispersion(float(k));
 		num_waves++;
 		//float l = med_len;
 		//float a = med_amp;
@@ -93,7 +95,9 @@ void vertex() {
 		//float wind_angle = (wind_dir - wind_var) + (1.5 * float(i)) * (wind_dir + (2.0 * wind_var));
 		float wind_angle = (wind_dir - wind_var) + (1.5 * freq) * (wind_dir + (2.0 * wind_var));
 		// The 1.5 constant determines how nicely lined-up all the wind directions are
-		vec2 dir = vec2(cos(wind_angle), cos((PI/2.0) - wind_angle));
+		//vec2 dir = vec2(cos(wind_angle), cos((PI/2.0) - wind_angle));
+		vec2 dir = normalize(vec2(cos(wind_angle), sin(wind_angle)));	// equal to above
+		//vec2 dir = normalize(vec2(cos(wind_dir), sin(wind_dir)) * directional_spread(freq, wind_dir));
 		
 	    //float w = 2.0 / l;          	// Frequency
 	    //float rho = speed * 2.0 / l;    // Phase constant
@@ -117,9 +121,9 @@ void vertex() {
 		// partial_x and y calculate the partial derivatives of H(x,y,t) for each sine wave.
 		// The derivative of a sum is the sum of the derivatives, so partials are summed
 		//float partial_x = -w * dir.x * a_scaled * cos(dot_xz * w * w_scaled + TIME * rho);
-		float partial_x = -freq * dir.x * phillips_amp * cos(dot_xz * freq + TIME * rho);
+		float partial_x = freq * dir.x * phillips_amp * cos(dot_xz * freq + TIME * rho);
     	//float partial_y = -w * dir.y * a_scaled * cos(dot_xz * w * w_scaled + TIME * rho); 
-		float partial_y = -freq * dir.y * phillips_amp * cos(dot_xz * freq + TIME * rho);
+		float partial_y = freq * dir.y * phillips_amp * cos(dot_xz * freq + TIME * rho);
 		partial_x_sum += partial_x;
 		partial_y_sum += partial_y;  
 	}
