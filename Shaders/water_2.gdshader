@@ -86,7 +86,7 @@ uniform float rand_factor = 1.0;	// A random multiplier controlled by the main p
 
 // Debugging texture
 varying vec3 debug;
-varying vec3 height;
+varying float height;
 
 // -----------------------------------------------------------------------------
 // VERTEX SHADER
@@ -96,8 +96,6 @@ void vertex() {
 	float partial_x_sum = 0.0; 	// Accumulator for each vertex's normal vector x comoponent
 	float partial_y_sum = 0.0; 	// Accumulator for each vertex's normal vector y component
 
-	float rand = random(vec2(TIME / 100.0, TIME));
-	
 	// APPROACH 1: Sum freq_limit / step_size waves with a constant delta frequency
 	for (float freq = 0.1; freq <= freq_limit; freq += step_size) {
 		
@@ -107,8 +105,7 @@ void vertex() {
 	
 	// APPROACH 3: Step through the dispersion relationship by step_size instead of wavenumber
 	//for (float k = 0.5; dispersion(float(k)) <= freq_limit; k += float(step_size)) {
-	
-		float l = wave_speed / freq;		// Relationship between wavelength, speed, and frequency
+		//float freq = dispersion(float(k));
 
 		// ~~~~ WIND DIRECTION ~~~~
 		// Get unit vector in direction of wind_angle
@@ -124,6 +121,7 @@ void vertex() {
 		//vec2 dir = normalize(vec2(cos(wind_dir), sin(wind_dir)) * cos_squared_DS(freq, wind_dir));
 		
 		// ~~~~ PHASE CONSTANT ~~~~
+		float l = wave_speed / freq;		// Relationship between wavelength, speed, and frequency
 	    float rho = l / 2.0 * PI; 		// Not scientifically accurate, but allows for better artistic control of wave speed
 		
 		// ~~~~ SINUSOID CALCULATION ~~~~
@@ -155,9 +153,8 @@ void vertex() {
 	// Set vertex position
 	VERTEX.y = y_sum + height_adj;
 	
-	height.x = VERTEX.x;
-	height.y = y_sum + height_adj;
-	height.z = VERTEX.z;
+	// Set vertex height for fragment shader
+	height = y_sum + height_adj;
 	
 	// Set vertex normal using summed partial derivatives of H(x,y,z)
 	NORMAL = vec3(-partial_x_sum, -partial_y_sum, 1);
@@ -182,6 +179,6 @@ void fragment() {
 	// Lighten tops of wave peaks
 	float peak_intensity = 0.5;							// Determines how much light contrast there is between the wave peaks and troughs
 	float trough_intensity = 0.2;						// Determines darkness of wave troughs. lower --> darker troughs
-	ALBEDO *= pow(E, peak_intensity * height.y) + trough_intensity;
+	ALBEDO *= pow(E, peak_intensity * height) + trough_intensity;
 }
 
