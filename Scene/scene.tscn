@@ -21,7 +21,7 @@ shader_parameter/height_adj = -2.0
 shader_parameter/albedo = Color(0, 0.25098, 0.368627, 1)
 
 [sub_resource type="PlaneMesh" id="PlaneMesh_n4lhe"]
-size = Vector2(32, 32)
+size = Vector2(256, 256)
 subdivide_width = 256
 subdivide_depth = 256
 
@@ -30,13 +30,13 @@ render_priority = 0
 shader = ExtResource("3_0h4ge")
 shader_parameter/freq_limit = 5.0
 shader_parameter/step_size = 0.1
-shader_parameter/wind_dir = 1.0
-shader_parameter/wind_speed = 2.5
-shader_parameter/wave_speed = 1.0
+shader_parameter/wind_dir = 0.6
+shader_parameter/wind_speed = 3.6
+shader_parameter/wave_speed = 0.6
 shader_parameter/amp_scalar = 1.0
 shader_parameter/height_adj = 0.0
 shader_parameter/rand_factor = 1.0
-shader_parameter/albedo = Color(0.0509804, 0.172549, 0.215686, 1)
+shader_parameter/albedo = Color(0.0235294, 0.137255, 0.192157, 1)
 
 [node name="Scene" type="Node3D"]
 

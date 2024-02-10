@@ -38,9 +38,24 @@ float spectrum(float freq, float wind_speed) {
 }
 
 // Takes the frequency of a wave and prevailing wind direction in radians.
-// Returns the result of the directional spread function, to be multiplied by the wave spectrum
-float directional_spread(float freq, float wind_dir) {
-	return 1.0 / 2.0 * PI;		// Default directional spread (Horvath)
+// Returns the result of the Positive Cosine Squared directional spread function
+float cos_squared_DS(float freq, float wind_dir) {
+	// Positive Cosine Squared
+	float dir;
+	if (wind_dir > -PI / 2.0 && wind_dir < PI / 2.0) {
+		dir = (2.0 / PI) * cos(wind_dir) * cos(wind_dir);
+	} else {
+		dir = 0.0;
+	}
+	return dir;
+	//return 1.0 / 2.0 * PI;		// Default directional spread (Horvath)
+}
+
+// Takes the frequency of a wave and prevailing wind direction in radians.
+// Returns the result of the a custom directional spread function
+float custom_DS(float freq, float wind_dir) {
+	float wind_var = 0.5;		// Variance of wind angle in radians
+	return (wind_dir - wind_var) + (1.5 * freq) * (wind_dir + (2.0 * wind_var));	// The 1.5 constant determines how nicely lined-up all the wind directions are
 }
 
 // Returns the frequency of a wave given its wavenumber, according to a deep water
@@ -80,7 +95,6 @@ void vertex() {
 	float y_sum = 0.0;			// Accumulator for each vertex's y-displacement
 	float partial_x_sum = 0.0; 	// Accumulator for each vertex's normal vector x comoponent
 	float partial_y_sum = 0.0; 	// Accumulator for each vertex's normal vector y component
-	float wind_var = 0.5;		// Variance of wind angle in radians
 
 	float rand = random(vec2(TIME / 100.0, TIME));
 	
@@ -98,10 +112,16 @@ void vertex() {
 
 		// ~~~~ WIND DIRECTION ~~~~
 		// Get unit vector in direction of wind_angle
-		float wind_angle = (wind_dir - wind_var) + (1.5 * freq) * (wind_dir + (2.0 * wind_var));
-		// The 1.5 constant determines how nicely lined-up all the wind directions are
-		vec2 dir = normalize(vec2(cos(wind_angle), sin(wind_angle)));
-		//vec2 dir = normalize(vec2(cos(wind_dir), sin(wind_dir)) * directional_spread(freq, wind_dir));
+		// APPROACH 1: Artistic directional spread function
+		//float wind_angle = custom_DS(freq, wind_dir);
+		//vec2 dir = normalize(vec2(cos(wind_angle), sin(wind_angle)));
+		
+		// APPROACH 2: frequency-scaled Positive Cosine Squared directional spread
+		float new_dir = cos_squared_DS(freq, wind_dir) * freq;
+		vec2 dir = normalize(vec2(cos(new_dir), sin(new_dir)));
+		
+		// APPROACH 3: No directional spread
+		//vec2 dir = normalize(vec2(cos(wind_dir), sin(wind_dir)) * cos_squared_DS(freq, wind_dir));
 		
 		// ~~~~ PHASE CONSTANT ~~~~
 	    float rho = l / 2.0 * PI; 		// Not scientifically accurate, but allows for better artistic control of wave speed
@@ -113,8 +133,8 @@ void vertex() {
 		// Get amplitude from Phillips spectrum
 		float phillips_amp = spectrum(freq, wind_speed) * amp_scalar * rand_factor;	// Scaled for artistic effect
 		
-		// Scale amplitude by directional_spread
-		float dir_spread = directional_spread(freq, wind_dir);
+		// Scale amplitude by directional spread
+		float dir_spread = cos_squared_DS(freq, wind_dir);
 		phillips_amp *= dir_spread;
 		
 		// Sum sinusoids
@@ -160,7 +180,7 @@ void fragment() {
 	ALBEDO = albedo + (0.1 * fresnel);					// Final color of water material with fresnel
 	
 	// Lighten tops of wave peaks
-	float peak_intensity = 0.7;							// Determines how much light contrast there is between the wave peaks and troughs
+	float peak_intensity = 0.5;							// Determines how much light contrast there is between the wave peaks and troughs
 	float trough_intensity = 0.2;						// Determines darkness of wave troughs. lower --> darker troughs
 	ALBEDO *= pow(E, peak_intensity * height.y) + trough_intensity;
 }
