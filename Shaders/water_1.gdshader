@@ -28,6 +28,8 @@ uniform float med_amp = 1.0;		// The base amplitude for all generated waves
 uniform float speed = 1.0;			// The speed of wave travel
 uniform float height_adj = 0.0;		// The vertical offset of the entire wave mesh
 
+varying float height;				// For peak lightening
+
 // -----------------------------------------------------------------------------
 // VERTEX SHADER
 // -----------------------------------------------------------------------------
@@ -75,6 +77,9 @@ void vertex() {
 	
 	// Set vertex normal using summed partial derivatives of H(x,y,z)
 	NORMAL = vec3(-partial_x_sum, -partial_y_sum, 1);
+	
+	// Set vertex height for fragment shader
+	height = y_sum + height_adj;
 }
 
 // Uniform variables for fragment shader
@@ -104,5 +109,10 @@ void fragment() {
 	ROUGHNESS = 0.01 * (1.0 - fresnel);					// Water material's roughness
 	RIM = 0.2;											// Water material's rim lighting intensity
 	ALBEDO = albedo + (0.1 * fresnel);					// Final color of water material with fresnel
+	
+	// Lighten tops of wave peaks
+	float peak_intensity = 0.1;							// Determines how much light contrast there is between the wave peaks and troughs
+	float trough_intensity = -0.6;						// Determines darkness of wave troughs. lower --> darker troughs
+	ALBEDO *= pow(E, peak_intensity * height) + trough_intensity;
 }
 

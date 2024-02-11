@@ -5,23 +5,23 @@
 [ext_resource type="Shader" path="res://Shaders/water_2.gdshader" id="3_0h4ge"]
 
 [sub_resource type="PlaneMesh" id="PlaneMesh_plirc"]
-size = Vector2(32, 32)
+size = Vector2(256, 256)
 subdivide_width = 256
 subdivide_depth = 256
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_jj0a4"]
 render_priority = 0
 shader = ExtResource("1_7xjff")
-shader_parameter/num_waves = 4
-shader_parameter/wind_dir = 0.3
+shader_parameter/num_waves = 13
+shader_parameter/wind_dir = 1.0
 shader_parameter/med_len = 3.0
-shader_parameter/med_amp = 1.5
-shader_parameter/speed = 1.0
-shader_parameter/height_adj = -2.0
+shader_parameter/med_amp = 3.0
+shader_parameter/speed = 2.0
+shader_parameter/height_adj = -5.0
 shader_parameter/albedo = Color(0, 0.25098, 0.368627, 1)
 
 [sub_resource type="PlaneMesh" id="PlaneMesh_n4lhe"]
-size = Vector2(256, 256)
+size = Vector2(32, 32)
 subdivide_width = 256
 subdivide_depth = 256
 
@@ -41,7 +41,7 @@ shader_parameter/albedo = Color(0.0235294, 0.137255, 0.192157, 1)
 [node name="Scene" type="Node3D"]
 
 [node name="OceanMesh" type="MeshInstance3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.000747681, 3.8147e-06, -0.122864)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.000747681, 8.85641, -0.122864)
 mesh = SubResource("PlaneMesh_plirc")
 surface_material_override/0 = SubResource("ShaderMaterial_jj0a4")
 
@@ -52,7 +52,7 @@ transform = Transform3D(1, 0, 0, 0, 0.943101, 0.332507, 0, -0.332507, 0.943101, 
 transform = Transform3D(0.00157261, 0.201984, -0.979388, -0.000324327, 0.979389, 0.201984, 0.999999, 2.32831e-10, 0.00160571, -97.1907, 8.20871, 0)
 
 [node name="MeshInstance3D" type="MeshInstance3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2.26127, 35.1978)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 5.70934, 35.1978)
 mesh = SubResource("PlaneMesh_n4lhe")
 skeleton = NodePath("../OceanMesh")
 surface_material_override/0 = SubResource("ShaderMaterial_p0hwe")
