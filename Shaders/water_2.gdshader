@@ -100,11 +100,11 @@ void vertex() {
 	for (float freq = 0.1; freq <= freq_limit; freq += step_size) {
 		
 	// APPROACH 2: Calculate frequency based off of wavenumber using dispersion relationship
-	//for (int k = 1; k < num_waves_limit; k++) {
+	//for (int k = 1; k < 50; k++) {
 		//float freq = dispersion(float(k));
 	
 	// APPROACH 3: Step through the dispersion relationship by step_size instead of wavenumber
-	//for (float k = 0.5; dispersion(float(k)) <= freq_limit; k += float(step_size)) {
+	//for (float k = 0.1; dispersion(float(k)) <= freq_limit; k += float(step_size)) {
 		//float freq = dispersion(float(k));
 
 		// ~~~~ WIND DIRECTION ~~~~
