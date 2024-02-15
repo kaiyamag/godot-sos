@@ -97,11 +97,11 @@ void vertex() {
 	float partial_y_sum = 0.0; 	// Accumulator for each vertex's normal vector y component
 
 	// APPROACH 1: Sum freq_limit / step_size waves with a constant delta frequency
-	for (float freq = 0.1; freq <= freq_limit; freq += step_size) {
+	//for (float freq = 0.1; freq <= freq_limit; freq += step_size) {
 		
 	// APPROACH 2: Calculate frequency based off of wavenumber using dispersion relationship
-	//for (int k = 1; k < 50; k++) {
-		//float freq = dispersion(float(k));
+	for (int k = 1; k < 50; k++) {
+		float freq = dispersion(float(k));
 	
 	// APPROACH 3: Step through the dispersion relationship by step_size instead of wavenumber
 	//for (float k = 0.1; dispersion(float(k)) <= freq_limit; k += float(step_size)) {
@@ -164,6 +164,8 @@ void vertex() {
 
 // ~~~~ FRAGMENT SHADER UNIFORMS ~~~~
 uniform vec3 albedo : source_color;		// The default color for the ocean mesh
+uniform float peak_intensity;
+uniform float trough_intensity;
 
 // -----------------------------------------------------------------------------
 // FRAGMENT SHADER
@@ -177,8 +179,8 @@ void fragment() {
 	ALBEDO = albedo + (0.1 * fresnel);					// Final color of water material with fresnel
 	
 	// Lighten tops of wave peaks
-	float peak_intensity = 0.5;							// Determines how much light contrast there is between the wave peaks and troughs
-	float trough_intensity = 0.2;						// Determines darkness of wave troughs. lower --> darker troughs
+	//float peak_intensity = 0.5;							// Determines how much light contrast there is between the wave peaks and troughs
+	//float trough_intensity = 0.2;						// Determines darkness of wave troughs. lower --> darker troughs
 	ALBEDO *= pow(E, peak_intensity * height) + trough_intensity;
 }
 
