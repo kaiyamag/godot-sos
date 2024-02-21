@@ -112,7 +112,8 @@ void fragment() {
 	
 	// Lighten tops of wave peaks
 	float peak_intensity = 0.1;							// Determines how much light contrast there is between the wave peaks and troughs
-	float trough_intensity = -0.6;						// Determines darkness of wave troughs. lower --> darker troughs
+	float trough_intensity = 0.0;						// Determines darkness of wave troughs. lower --> darker troughs
 	ALBEDO *= pow(E, peak_intensity * height) + trough_intensity;
+	//ALPHA = pow(E, peak_intensity * height) + trough_intensity - 1.0;
 }
 
