@@ -60,8 +60,7 @@ float custom_DS(float freq, float wind_dir) {
 
 // Returns the frequency of a wave given its wavenumber, according to a deep water
 // dispersion relationship
-float dispersion(float k) {
-	float damping_factor = 3.0;		// ADDED: lower damping factor produces lower-energy waves
+float dispersion(float k, float damping_factor) {
 	return sqrt(9.8 * k) / damping_factor;
 }
 
@@ -83,6 +82,7 @@ uniform float wave_speed = 1.0;		// The speed of wave travel
 uniform float amp_scalar = 1.0;		// The base amplitude for all generated waves
 uniform float height_adj = 0.0;		// The vertical offset of the entire wave mesh
 uniform float rand_factor = 1.0;	// A random multiplier controlled by the main program loop
+uniform float damping_factor = 3.0;	// Controls sensitivity of dispersion relation. Lower damping factor produces lower-energy waves
 
 // Debugging texture
 varying vec3 debug;
@@ -100,12 +100,12 @@ void vertex() {
 	//for (float freq = 0.1; freq <= freq_limit; freq += step_size) {
 		
 	// APPROACH 2: Calculate frequency based off of wavenumber using dispersion relationship
-	for (int k = 1; k < 50; k++) {
-		float freq = dispersion(float(k));
+	//for (int k = 1; k < 50; k++) {
+		//float freq = dispersion(float(k));
 	
 	// APPROACH 3: Step through the dispersion relationship by step_size instead of wavenumber
-	//for (float k = 0.1; dispersion(float(k)) <= freq_limit; k += float(step_size)) {
-		//float freq = dispersion(float(k));
+	for (float k = 0.1; dispersion(float(k), damping_factor) <= freq_limit; k += float(step_size)) {
+		float freq = dispersion(float(k), damping_factor);
 
 		// ~~~~ WIND DIRECTION ~~~~
 		// Get unit vector in direction of wind_angle
