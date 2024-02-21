@@ -1,27 +1,10 @@
-[gd_scene load_steps=8 format=3 uid="uid://boafaywxvgyoi"]
+[gd_scene load_steps=5 format=3 uid="uid://boafaywxvgyoi"]
 
-[ext_resource type="Shader" path="res://Shaders/water_1.gdshader" id="1_7xjff"]
-[ext_resource type="Script" path="res://Scene/c_controller.cs" id="2_0g7lv"]
+[ext_resource type="Script" path="res://Scene/performance_monitor.cs" id="1_rlw8q"]
 [ext_resource type="Shader" path="res://Shaders/water_2.gdshader" id="3_0h4ge"]
 
-[sub_resource type="PlaneMesh" id="PlaneMesh_plirc"]
-size = Vector2(256, 256)
-subdivide_width = 256
-subdivide_depth = 256
-
-[sub_resource type="ShaderMaterial" id="ShaderMaterial_jj0a4"]
-render_priority = 0
-shader = ExtResource("1_7xjff")
-shader_parameter/num_waves = 13
-shader_parameter/wind_dir = 1.0
-shader_parameter/med_len = 3.0
-shader_parameter/med_amp = 3.0
-shader_parameter/speed = 2.0
-shader_parameter/height_adj = -5.0
-shader_parameter/albedo = Color(0, 0.25098, 0.368627, 1)
-
 [sub_resource type="PlaneMesh" id="PlaneMesh_n4lhe"]
-size = Vector2(32, 32)
+size = Vector2(256, 256)
 subdivide_width = 256
 subdivide_depth = 256
 
@@ -31,29 +14,32 @@ shader = ExtResource("3_0h4ge")
 shader_parameter/freq_limit = 5.0
 shader_parameter/step_size = 0.1
 shader_parameter/wind_dir = 0.6
-shader_parameter/wind_speed = 3.6
+shader_parameter/wind_speed = 3.4
 shader_parameter/wave_speed = 0.6
 shader_parameter/amp_scalar = 1.0
 shader_parameter/height_adj = 0.0
 shader_parameter/rand_factor = 1.0
+shader_parameter/damping_factor = 3.0
 shader_parameter/albedo = Color(0.0235294, 0.137255, 0.192157, 1)
+shader_parameter/peak_intensity = 0.5
+shader_parameter/trough_intensity = 0.2
 
 [node name="Scene" type="Node3D"]
-
-[node name="OceanMesh" type="MeshInstance3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.000747681, 8.85641, -0.122864)
-mesh = SubResource("PlaneMesh_plirc")
-surface_material_override/0 = SubResource("ShaderMaterial_jj0a4")
+script = ExtResource("1_rlw8q")
 
 [node name="DirectionalLight3D" type="DirectionalLight3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, 0.943101, 0.332507, 0, -0.332507, 0.943101, -0.321175, 15.2202, 42.5938)
 
 [node name="Camera3D" type="Camera3D" parent="."]
-transform = Transform3D(0.00157261, 0.201984, -0.979388, -0.000324327, 0.979389, 0.201984, 0.999999, 2.32831e-10, 0.00160571, -97.1907, 8.20871, 0)
+transform = Transform3D(0.0017453, 0.403545, -0.914958, 0, 0.914959, 0.403545, 0.999999, -0.000704307, 0.00159688, -160, 50, 15.994)
 
-[node name="MeshInstance3D" type="MeshInstance3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 5.70934, 35.1978)
+[node name="PhillipsOcean" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.775925, 35.1978)
 mesh = SubResource("PlaneMesh_n4lhe")
-skeleton = NodePath("../OceanMesh")
+skeleton = NodePath("")
 surface_material_override/0 = SubResource("ShaderMaterial_p0hwe")
-script = ExtResource("2_0g7lv")
+
+[node name="Label" type="Label" parent="."]
+offset_right = 40.0
+offset_bottom = 23.0
+text = "hello world"

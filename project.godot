@@ -10,10 +10,14 @@ config_version=5
 
 [application]
 
-config/name="Sum_of_Sines"
+config/name="Benchmarking_SoS"
 run/main_scene="res://Scene/scene.tscn"
 config/features=PackedStringArray("4.1", "C#", "GL Compatibility")
 config/icon="res://Scene/icon.svg"
+
+[display]
+
+window/vsync/vsync_mode=0
 
 [dotnet]
 
