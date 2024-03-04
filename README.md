@@ -58,7 +58,7 @@ This class samples average, minimum, and maximum frame rate (FPS), draw time (ms
 
 This class can be added without dependencies to any Godot project.
 
-**Public Variables**
+**Public Variables**\
 `sample_rate` : Number of frames to wait between each profiler sample\
 `print_rate` : Number of frames to wait between calculating and printing averages
 
