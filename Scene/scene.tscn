@@ -12,7 +12,7 @@ subdivide_depth = 256
 render_priority = 0
 shader = ExtResource("3_0h4ge")
 shader_parameter/freq_limit = 5.0
-shader_parameter/step_size = 0.1
+shader_parameter/step_size = 0.089
 shader_parameter/wind_dir = 0.6
 shader_parameter/wind_speed = 3.4
 shader_parameter/wave_speed = 0.6
@@ -31,7 +31,7 @@ script = ExtResource("1_rlw8q")
 transform = Transform3D(1, 0, 0, 0, 0.943101, 0.332507, 0, -0.332507, 0.943101, -0.321175, 15.2202, 42.5938)
 
 [node name="Camera3D" type="Camera3D" parent="."]
-transform = Transform3D(0.0017453, 0.403545, -0.914958, 0, 0.914959, 0.403545, 0.999999, -0.000704307, 0.00159688, -160, 50, 15.994)
+transform = Transform3D(0.0017453, 0.403545, -0.914958, 0, 0.914959, 0.403545, 0.999999, -0.000704307, 0.00159688, -120, 10, 15.994)
 
 [node name="PhillipsOcean" type="MeshInstance3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.775925, 35.1978)
@@ -39,7 +39,14 @@ mesh = SubResource("PlaneMesh_n4lhe")
 skeleton = NodePath("")
 surface_material_override/0 = SubResource("ShaderMaterial_p0hwe")
 
+[node name="FPSLabel" type="Label" parent="."]
+offset_left = 972.0
+offset_top = 10.0
+offset_right = 1012.0
+offset_bottom = 33.0
+horizontal_alignment = 2
+
 [node name="Label" type="Label" parent="."]
 offset_right = 40.0
 offset_bottom = 23.0
-text = "hello world"
+text = "Waiting for first average readings..."
