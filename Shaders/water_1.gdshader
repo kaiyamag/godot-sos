@@ -1,7 +1,14 @@
 /**
 * water_1.gdshader
-* Copyright Kaiya Magnuson 2023
-* Contains the vertex shader and fragment shader programs for the sum of sines ocean shader.
+* 
+* Contains the vertex shader and fragment shader programs for the sum of sines ocean shader using a custom
+* wavenumber dispersion function.
+*
+* Code References:
+*	Pseudo-random number generator function: https://stackoverflow.com/questions/5149544/can-i-generate-a-random-number-inside-a-pixel-shader
+*	Godot built-in diffuse lighting tutorial: https://docs.godotengine.org/en/3.5/tutorials/shaders/your_first_shader/your_second_3d_shader.html
+*
+* Copyright Kaiya Magnuson 2024
 */
 
 shader_type spatial;		// Indicate 3D model type
@@ -28,7 +35,7 @@ uniform float med_amp = 1.0;		// The base amplitude for all generated waves
 uniform float speed = 1.0;			// The speed of wave travel
 uniform float height_adj = 0.0;		// The vertical offset of the entire wave mesh
 
-varying float height;				// For peak lightening
+varying float height;				// Varying for vertex height (for peak lightening)
 
 // -----------------------------------------------------------------------------
 // VERTEX SHADER
@@ -39,23 +46,18 @@ void vertex() {
 	float partial_y_sum = 0.0; 	// Accumulator for each vertex's normal vector y component
 	float wind_var = 0.5;		// Variance of wind angle in radians
 	
-	// Buffers of wave constants
-	vec2 dir[4]  = {vec2(1.0,1.0), vec2(0.5,1.0), vec2(0.0,1.0), vec2(1.0,0.5)};
-	
 	for (int i = 1; i <= num_waves; i++) {
 		float l = med_len;
 		float a = med_amp;
 
 		// Get unit vector in direction of wind_angle
 		float rand = random(vec2(TIME / 100.0, TIME));
-		float wind_angle = (wind_dir - wind_var) + (1.5 * float(i)) * (wind_dir + (2.0 * wind_var));
-		// The 1.5 constant determines how nicely lined-up all the wind directions are
+		float wind_angle = (wind_dir - wind_var) + (1.5 * float(i)) * (wind_dir + (2.0 * wind_var));	// The 1.5 constant determines how aligned the wind directions are
 		vec2 dir = vec2(cos(wind_angle), cos((PI/2.0) - wind_angle));
 		
-	    float w = 2.0 / l;          	// Frequency
-		float rho = speed * 2.0 / l;    // Phase constant
-	    // float rho = ( 1.0 / float(i) ) * speed * 2.0 / l;    // Phase constant with wavenumber-based speed adjustment
-		
+	    float w = 2.0 / l;          							// Frequency
+		float rho = speed * 2.0 / l;    						// Phase constant
+	    
 		// Solve for vertex position
 		vec2 xz_pos = vec2(VERTEX.x, VERTEX.z);
    		float dot_xz = dot(dir, xz_pos);
@@ -82,26 +84,15 @@ void vertex() {
 	height = y_sum + height_adj;
 }
 
-// Uniform variables for fragment shader
-uniform vec3 albedo : source_color;		// The default color for the ocean mesh
-
-// Returns the amplitude associated with the given frequency on the Phillips
-// oceanographic spectrum with a given wind speed.
-float spectrum(float freq, float wind_speed) {
-	// Universal constants
-	float e = 2.7183;
-	float gravity = 9.8;
-	
-	// Phillips spectrum
-	float L = pow(wind_speed, 2) / gravity;
-	float amp = pow(e, -1.0 / pow(freq * L, 2));
-	amp = amp / pow(freq, 4);
-	return amp;
-}
 
 // -----------------------------------------------------------------------------
 // FRAGMENT SHADER
 // -----------------------------------------------------------------------------
+// Uniform variables for fragment shader
+uniform vec3 albedo : source_color;			// The default color for the ocean mesh
+uniform float peak_intensity;				// Determines how much light contrast there is between the wave peaks and troughs
+uniform float trough_intensity;				// Determines darkness of wave troughs. lower --> darker troughs
+
 void fragment() {
 	// Basic diffuse lighting fragment shader from this Godot tutorial: https://docs.godotengine.org/en/3.5/tutorials/shaders/your_first_shader/your_second_3d_shader.html
 	float fresnel = sqrt(1.0 - dot(NORMAL, VIEW));		// Fresnel reflection intensity
@@ -110,10 +101,7 @@ void fragment() {
 	RIM = 0.2;											// Water material's rim lighting intensity
 	ALBEDO = albedo + (0.1 * fresnel);					// Final color of water material with fresnel
 	
-	// Lighten tops of wave peaks
-	float peak_intensity = 0.1;							// Determines how much light contrast there is between the wave peaks and troughs
-	float trough_intensity = 0.0;						// Determines darkness of wave troughs. lower --> darker troughs
+	// Lighten tops of wave peaks			
 	ALBEDO *= pow(E, peak_intensity * height) + trough_intensity;
-	//ALPHA = pow(E, peak_intensity * height) + trough_intensity - 1.0;
 }
 
