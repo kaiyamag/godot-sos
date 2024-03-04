@@ -1,7 +1,14 @@
 /**
 * water_2.gdshader
+* 
+* Contains the vertex shader and fragment shader programs for the sum of sines ocean shader using the Phillips
+* wave energy spectrum and the positive cosine squared directional spread.
+*
+* Code References:
+*	Pseudo-random number generator function: https://stackoverflow.com/questions/5149544/can-i-generate-a-random-number-inside-a-pixel-shader
+*	Godot built-in diffuse lighting tutorial: https://docs.godotengine.org/en/3.5/tutorials/shaders/your_first_shader/your_second_3d_shader.html
+*
 * Copyright Kaiya Magnuson 2024
-* Contains the vertex shader and fragment shader programs for the sum of sines ocean shader, with Phillips Spectrum.
 */
 
 shader_type spatial;		// Indicate 3D model type
@@ -11,8 +18,8 @@ render_mode specular_toon;	// Use diffuse lighting model
 // ~~~~ HELPER FUNCTIONS ~~~~
 
 /*
-Generates a pseudo-random number using two irrational numbers and a seed value.
-Implementation from https://stackoverflow.com/questions/5149544/can-i-generate-a-random-number-inside-a-pixel-shader
+* Generates a pseudo-random number using two irrational numbers and a seed value.
+* Implementation from https://stackoverflow.com/questions/5149544/can-i-generate-a-random-number-inside-a-pixel-shader
 */
 float random( vec2 p )
 {
@@ -23,8 +30,10 @@ float random( vec2 p )
     return fract( cos( dot(p,K1) ) * 12345.6789 );		// fract returns the menissa (after decimal point)
 }
 
-// Returns the amplitude associated with the given frequency on the Phillips
-// oceanographic spectrum with a given wind speed.
+/*
+* Returns the amplitude associated with the given frequency on the Phillips
+* oceanographic spectrum with a given wind speed.
+*/
 float spectrum(float freq, float wind_speed) {
 	// Universal constants
 	float e = 2.7183;
@@ -37,8 +46,10 @@ float spectrum(float freq, float wind_speed) {
 	return amp;
 }
 
-// Takes the frequency of a wave and prevailing wind direction in radians.
-// Returns the result of the Positive Cosine Squared directional spread function
+/*
+* Takes the frequency of a wave and prevailing wind direction in radians.
+* Returns the result of the Positive Cosine Squared directional spread function.
+*/
 float cos_squared_DS(float freq, float wind_dir) {
 	// Positive Cosine Squared
 	float dir;
@@ -48,18 +59,21 @@ float cos_squared_DS(float freq, float wind_dir) {
 		dir = 0.0;
 	}
 	return dir;
-	//return 1.0 / 2.0 * PI;		// Default directional spread (Horvath)
 }
 
-// Takes the frequency of a wave and prevailing wind direction in radians.
-// Returns the result of the a custom directional spread function
+/*
+* Takes the frequency of a wave and prevailing wind direction in radians.
+* Returns the result of the a custom directional spread function
+*/
 float custom_DS(float freq, float wind_dir) {
 	float wind_var = 0.5;		// Variance of wind angle in radians
 	return (wind_dir - wind_var) + (1.5 * freq) * (wind_dir + (2.0 * wind_var));	// The 1.5 constant determines how nicely lined-up all the wind directions are
 }
 
-// Returns the frequency of a wave given its wavenumber, according to a deep water
-// dispersion relationship
+/*
+* Returns the frequency of a wave given its wavenumber, according to a deep water
+* dispersion relationship
+*/
 float dispersion(float k, float damping_factor) {
 	return sqrt(9.8 * k) / damping_factor;
 }
@@ -71,7 +85,6 @@ float dispersion(float k, float damping_factor) {
 // Wave summation controllers
 uniform float freq_limit = 5;		// The Nyquist frequency for this mesh model
 uniform float step_size = 0.2;		// The change in frequency between summed waves
-//uniform int num_waves_limit = 10;	// NOT USED: The max number of sinusoids to sum
 
 // Wind controllers
 uniform float wind_dir = 0.3;		// The wind direction in radians
@@ -113,7 +126,7 @@ void vertex() {
 		//float wind_angle = custom_DS(freq, wind_dir);
 		//vec2 dir = normalize(vec2(cos(wind_angle), sin(wind_angle)));
 		
-		// APPROACH 2: frequency-scaled Positive Cosine Squared directional spread
+		// APPROACH 2: Frequency-scaled Positive Cosine Squared directional spread
 		float new_dir = cos_squared_DS(freq, wind_dir) * freq;
 		vec2 dir = normalize(vec2(cos(new_dir), sin(new_dir)));
 		
@@ -122,7 +135,7 @@ void vertex() {
 		
 		// ~~~~ PHASE CONSTANT ~~~~
 		float l = wave_speed / freq;		// Relationship between wavelength, speed, and frequency
-	    float rho = l / 2.0 * PI; 		// Not scientifically accurate, but allows for better artistic control of wave speed
+	    float rho = l / 2.0 * PI; 			// Not scientifically accurate, but allows for better artistic control of wave speed
 		
 		// ~~~~ SINUSOID CALCULATION ~~~~
 		vec2 xz_pos = vec2(VERTEX.x, VERTEX.z);
@@ -138,8 +151,8 @@ void vertex() {
 		// Sum sinusoids
 		y_sum += (phillips_amp * sin(dot_xz * freq + TIME * rho));
 		
-		// DEBUG: Check result of phillips spectrum in RGB texture
-		debug = vec3(phillips_amp, 0.0, 0.0);
+		// DEBUG: Check result of phillips spectrum in RGB texture. Set ALBEDO to debug.
+		// debug = vec3(phillips_amp, 0.0, 0.0);
 		
 		// ~~~~ NORMALS ~~~~
 		// partial_x and y calculate the partial derivatives of H(x,y,t) for each sine wave.
@@ -161,11 +174,10 @@ void vertex() {
 }
 
 
-
 // ~~~~ FRAGMENT SHADER UNIFORMS ~~~~
-uniform vec3 albedo : source_color;		// The default color for the ocean mesh
-uniform float peak_intensity;
-uniform float trough_intensity;
+uniform vec3 albedo : source_color;			// The default color for the ocean mesh
+uniform float peak_intensity;				// Determines how much light contrast there is between the wave peaks and troughs
+uniform float trough_intensity;				// Determines darkness of wave troughs. lower --> darker troughs
 
 // -----------------------------------------------------------------------------
 // FRAGMENT SHADER
@@ -178,9 +190,7 @@ void fragment() {
 	RIM = 0.2;											// Water material's rim lighting intensity
 	ALBEDO = albedo + (0.1 * fresnel);					// Final color of water material with fresnel
 	
-	// Lighten tops of wave peaks
-	//float peak_intensity = 0.5;							// Determines how much light contrast there is between the wave peaks and troughs
-	//float trough_intensity = 0.2;						// Determines darkness of wave troughs. lower --> darker troughs
+	// Lighten tops of wave peaks				
 	ALBEDO *= pow(E, peak_intensity * height) + trough_intensity;
 }
 
