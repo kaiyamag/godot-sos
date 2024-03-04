@@ -1,10 +1,29 @@
+/*
+* performance_monitor.cs
+* 
+* This class samples average, minimum, and maximum frame rate (FPS), draw time (ms), and memory usage (MB)
+* for any Godot project. Performance data is sampled every 10 frames (see `sample_rate`) and averages are
+* calculated every 500 frames (see `print_rate`). The latest performance data and number of elapsed frames are
+* displayed in a GUI overlay of the Godot project.
+*
+* This class can be added without dependencies to any Godot project
+*
+* Code References:
+* 	Example GUI display: https://github.com/njromano/GodotFPSCSharp/blob/main/menus/DebugDisplay.cs
+*
+* Copyright Kaiya Magnuson 2024
+*/
+
 using Godot;
 using System;
 using System.IO;
 
 public partial class performance_monitor : Node
 {
-	public int sample_rate = 10;					// Number of frames to wait between each profiler sample
+	public int sample_rate = 10;			// Number of frames to wait between each profiler sample
+	public int print_rate = 500;			// Number of frames to wait between calculating and printing averages
+
+	// -----------------------------------------------------------------------------------------------------------------
 	private double avg_FPS, min_FPS, max_FPS;
 	private double fps;						// FPS at current frame
 	private double fps_sum;					// Accumulator for FPS average
@@ -18,18 +37,18 @@ public partial class performance_monitor : Node
 	private double mem_sum;					// Accumulator for memory usage average
 
 	private long frame_count;				// The number of elapsed frames, used for averaging
-	private long sample_count;				// The number of samples, used for averaging
+	private long sample_count;				// The number of elapsed samples, used for averaging
 
-	// Initialize min/max values and accumulators
+	// Initialize min/max values and accumulators when project is launched
 	public override void _Ready()
 	{	
 		avg_FPS = 0;
-		min_FPS = 1000;		// Magic numbers used here since FPS should never exit the range [0,1000]
+		min_FPS = 1000;		// Minimum FPS is not expected to exit the range [0,1000]
 		max_FPS = 0;
 		fps_sum = 0;
 
 		avg_time = 0;
-		min_time = 10000;
+		min_time = 10000;	// Minimum draw time is not expected to exit the range [0,10000]
 		max_time = 0;
 		time_sum = 0;
 
@@ -41,12 +60,12 @@ public partial class performance_monitor : Node
 	}
 
 	/**
-	* Controls FPS and draw time sampling rate
+	* Controls FPS and draw time sampling rate. This function is run once per frame
 	*/
 	public override void _Process(double delta)
 	{
 		//int sample_rate = 10;			// Number of frames between samples
-		int print_rate = 500;			// Number of frames between printing stats
+		//int print_rate = 500;			// Number of frames between printing stats
 		frame_count++;
 
 		if (frame_count % sample_rate == 0) {
@@ -54,6 +73,8 @@ public partial class performance_monitor : Node
 			sampleFPS();
 			sampleDrawTime();
 			sampleMem();
+
+			GetNode<Label>("FPSLabel").Text = $"Frame count: {frame_count}";
 		}
 
 		if (frame_count >= print_rate) {
@@ -109,27 +130,6 @@ public partial class performance_monitor : Node
 	* Prints formatted FPS, draw time, and memory usage stats
 	*/
 	private void printStats() {
-		// string fstr;	// Placeholder for formatted strings
-		// GD.Print("------------------------");
-		// fstr = avg_FPS.ToString("F2"); 
-		// GD.Print("Avg. FPS: ", fstr);
-		// GD.Print("Min FPS: ", min_FPS);
-		// GD.Print("Max FPS: ", max_FPS);
-
-		// GD.Print();
-		// fstr = toMS(avg_time).ToString("F2"); 
-		// GD.Print("Avg. Draw Time: ", fstr, " ms");
-		// fstr = toMS(min_time).ToString("F2"); 
-		// GD.Print("Min Draw Time: ", fstr, " ms");
-		// fstr = toMS(max_time).ToString("F2");
-		// GD.Print("Max Draw Time: ", fstr, " ms");
-
-		// GD.Print();
-		// fstr = toMB(avg_mem).ToString("F4");
-		// GD.Print("Avg. Memory: ", fstr, " MB");
-		// fstr = toMB(mem).ToString("F4");
-		// GD.Print("Current Memory: ", fstr, " MB");
-
 		string label_str = "";												// Placeholder for formatted strings 
 		label_str += $"\nAvg. FPS: {avg_FPS.ToString("F0")}"; 
 		label_str += $"\nMin FPS: {min_FPS.ToString("F0")}";
@@ -140,7 +140,7 @@ public partial class performance_monitor : Node
 		label_str += $"\nAvg. Memory: {toMB(avg_mem).ToString("F2")} MB";
 		label_str += $"\nCurrent Memory: {toMB(mem).ToString("F2")} MB";
 
-		GetNode<Label>("Label").Text = label_str;
+		GetNode<Label>("Label").Text = label_str;						// This line from https://github.com/njromano/GodotFPSCSharp/blob/main/menus/DebugDisplay.cs
 	}
 
 	/**
